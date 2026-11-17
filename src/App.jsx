@@ -113,6 +113,24 @@ export default function App() {
   }
 
   if (feedbackRoute && user) {
+    if (user.role !== 'user') {
+      return (
+        <>
+          {scene}
+          {splash}
+          <div className="feedback-app">
+            <main>
+              <div className="card auth-card" style={{ margin: '48px auto', maxWidth: 420 }}>
+                <h2>Feedback app</h2>
+                <p className="sub">Administrator accounts open the Admin panel only. Sign out and use Feedback staff credentials here.</p>
+                <button className="btn" type="button" onClick={leaveFeedback}>Sign out</button>
+                <a className="btn ghost" href="#admin" style={{ display: 'inline-block', marginTop: 10 }}>Go to Admin</a>
+              </div>
+            </main>
+          </div>
+        </>
+      )
+    }
     return (
       <>
         {scene}
@@ -192,6 +210,30 @@ export default function App() {
   }
 
   if (staffRoute && user) {
+    if (user.role !== 'admin') {
+      return (
+        <>
+          {scene}
+          {splash}
+          <main>
+            <div className="card auth-card" style={{ margin: '48px auto', maxWidth: 420 }}>
+              <h2>Admin panel</h2>
+              <p className="sub">Feedback / staff accounts open the Feedback app only. Sign out and use Admin credentials here.</p>
+              <button
+                className="btn"
+                type="button"
+                onClick={async () => {
+                  await logout()
+                  window.location.hash = '#feedback'
+                }}
+              >
+                Sign out → Feedback
+              </button>
+            </div>
+          </main>
+        </>
+      )
+    }
     return (
       <>
         {scene}

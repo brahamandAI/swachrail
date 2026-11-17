@@ -43,6 +43,13 @@ async function login(req, res) {
   const user = await User.findOne({ username })
   const password = String(req.body?.password || '')
   if (!user || !(await verifyPassword(password, user.passwordHash))) fail(401, 'Username or password is incorrect.')
+  const portal = String(req.body?.portal || '').trim().toLowerCase()
+  if (portal === 'admin' && user.role !== 'admin') {
+    fail(403, 'Feedback / staff accounts open the Feedback app only. Use Admin credentials here.')
+  }
+  if (portal === 'feedback' && user.role !== 'user') {
+    fail(403, 'Administrator accounts open the Admin panel only. Use Feedback credentials here.')
+  }
   await openSession(res, user, date)
   await stateResponse(res, {
     id: String(user._id),

@@ -24,9 +24,10 @@ export default function Login({ needsSetup, onBack, signInOnly = false }) {
   const submit = async (e) => {
     e.preventDefault()
     const today = isoDate()
+    const portal = signInOnly ? 'feedback' : 'admin'
     const error = creating
       ? await setupAdmin({ name, username, password, station, date: today })
-      : await login({ username, password, date: today })
+      : await login({ username, password, date: today, portal })
     setErr(error)
     if (error) return
     setPassword('')
@@ -78,7 +79,7 @@ export default function Login({ needsSetup, onBack, signInOnly = false }) {
             ? 'Sign in with the username and password from your administrator. Feedback, Photo Report, Attendance and the summaries open after sign in.'
             : creating
               ? 'Create the administrator. Passengers never see this screen.'
-              : 'Administrator and employee sign-in.'}
+              : 'Administrator sign-in only. Staff use the Feedback app.'}
         </p>
         {creating && (
           <label className="field">
