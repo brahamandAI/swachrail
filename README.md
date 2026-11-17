@@ -3,14 +3,23 @@
 ## Run
 ```bash
 npm install
-npm run dev      # http://localhost:5173
-npm run build    # production build in /dist
+npm run build
+npm start      # production server (VPS)
 ```
 
+## Dev
+```bash
+npm run dev    # http://localhost:5173
+```
+
+## Env (VPS)
+Copy `.env.example` to `.env` and set:
+- `MONGODB_URI`
+- `BLOB_READ_WRITE_TOKEN`
+- `PORT=3000`
+- `NODE_ENV=production`
+
 ## Notes
-- 3D train scene: `src/components/Scene3D.jsx` (three.js 0.128)
-- Dashboard data / city multipliers / AI answers: `src/data.js`
-- Feedback form + Admin panel: `src/components/Feedback.jsx`
-  (demo admin login: `admin` / `admin123` when no backend is running)
-- Backend is optional. To use the Node/Express backend (`/api/login`, `/api/feedback`,
-  `/api/records`, `/api/ask`), uncomment the proxy in `vite.config.js`.
+- Feedback: `/#feedback`
+- Admin: `/#admin`
+- Backend setup: `/#backend`
