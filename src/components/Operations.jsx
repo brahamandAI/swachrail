@@ -259,8 +259,8 @@ export function StaffDesk({ actor, mode = 'both' }) {
 
   const saveTrain = async (e) => {
     e.preventDefault()
-    const error = await addTrain(trainStation, trainNo)
-    setTrainMsg(error || `Saved train ${trainNo.trim()} at ${stationName(trainStation)}.`)
+    const error = await addTrain(actor.station, trainNo)
+    setTrainMsg(error || `Saved train ${trainNo.trim()} at ${stationName(actor.station)}.`)
     if (!error) setTrainNo('')
   }
 
@@ -408,12 +408,12 @@ export function StaffDesk({ actor, mode = 'both' }) {
           <form className="card" onSubmit={saveTrain}>
             <div className="k">Configured trains</div>
             <p className="empty">Add the trains that actually serve a station. Mark them running from the dashboard on the duty date.</p>
-            <StationPicker label="Station" value={trainStation} onChange={setTrainStation} />
+            <label className="field">Station<input value={stationName(actor.station)} disabled readOnly /></label>
             <label className="field">Train number<input value={trainNo} onChange={(e) => setTrainNo(e.target.value)} placeholder="04811" /></label>
             <button className="btn" type="submit">Add train</button>
             <Note text={trainMsg} />
             <div className="chips" style={{ marginTop: 12 }}>
-              {(trains[trainStation] || []).map((no) => (
+              {(trains[actor.station] || []).map((no) => (
                 <span key={no} className="chip">{no}</span>
               ))}
             </div>
