@@ -34,7 +34,7 @@ Bhagalpur
 Bharuch
 Bhavnagar
 Bhopal
-Bhubaneswar
+Bhuneshwar
 Bhuj
 Bhusaval
 Bikaner
