@@ -339,7 +339,7 @@ export function StaffDesk({ actor, mode = 'both' }) {
             <EmpField label="Username / App login"><input value={form.username} onChange={(e) => set('username', e.target.value)} placeholder="Defaults to Employee ID" autoComplete="off" /></EmpField>
             <EmpField label="Password" required><input type="password" value={form.password} onChange={(e) => set('password', e.target.value)} required minLength={6} autoComplete="new-password" /></EmpField>
             <div className="emp-field">
-              <StationPicker label="Station" value={form.station} onChange={(id) => set('station', id)} />
+              <label className="field">Station<input value={stationName(actor.station)} disabled readOnly /></label>
             </div>
           </EmpSection>
 

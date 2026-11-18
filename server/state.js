@@ -109,13 +109,13 @@ export async function buildState(auth) {
       records: records.map((record) => toClientRecord(record, { mask: true })),
     }
   }
-  const scope = auth.role === 'admin' ? {} : { station: auth.station }
+  const scope = { station: auth.station }
   const [records, trainDocs, users] = await Promise.all([
     Record.find(scope).sort({ at: -1 }).limit(auth.role === 'admin' ? 5000 : 2000),
     Train.find(scope).sort({ number: 1 }),
     auth.role === 'admin'
-      ? User.find().select('name username role station')
-      : User.find({ _id: auth.id }).select('name username role station'),
+      ? User.find({ station: auth.station }).select('name username role station profile')
+      : User.find({ _id: auth.id }).select('name username role station profile'),
   ])
   return {
     needsSetup: !adminExists,

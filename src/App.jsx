@@ -42,11 +42,11 @@ export default function App() {
   const [crewStation, setCrewStation] = useState(user?.station || 'jodhpur')
 
   useEffect(() => {
-    if (user?.role === 'user') setCrewStation(user.station)
+    if (user?.station) setCrewStation(user.station)
   }, [user?.id, user?.role, user?.station])
 
   const duty = db.session?.date || isoDate()
-  const viewStation = user?.role === 'admin' ? crewStation : user?.station || 'jodhpur'
+  const viewStation = user?.station || 'jodhpur'
   const publicRecords = useMemo(
     () => db.records
       .filter((record) => record.type === 'feedback')

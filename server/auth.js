@@ -77,9 +77,7 @@ export async function openSession(res, user, dutyDate) {
   setSessionCookie(res, token)
 }
 
-export function stationFor(auth, requested) {
-  if (auth.role === 'user') return auth.station
-  const station = String(requested || '').trim()
-  if (!station || station === 'all') return auth.station
-  return station
+export function stationFor(auth) {
+  // Station admins and staff stay on their own station — no cross-city mixup.
+  return auth.station
 }

@@ -277,6 +277,7 @@ async function staff(req, res) {
     if (!id || id === auth.id) fail(400, 'That account cannot be removed.')
     const target = await User.findById(id)
     if (!target || target.role === 'admin') fail(400, 'That account cannot be removed.')
+    if (target.station !== auth.station) fail(403, 'You can only manage staff for your station.')
     await User.deleteOne({ _id: target._id })
     await stateResponse(res, auth)
     return
@@ -288,7 +289,7 @@ async function staff(req, res) {
     name: body.name,
     username: loginUser,
     password: body.password,
-    station: body.station,
+    station: auth.station,
   })
   if (await User.exists({ username: fields.username })) fail(409, 'That username / employee ID is already in use.')
   try {
@@ -297,7 +298,7 @@ async function staff(req, res) {
       username: fields.username,
       passwordHash: await hashPassword(fields.password),
       role: 'user',
-      station: fields.station,
+      station: auth.station,
       profile,
     })
   } catch (err) {
@@ -326,17 +327,19 @@ async function recordEdit(req, res) {
   if (req.method === 'DELETE') {
     const id = String(req.query.id || '')
     if (!mongoose.isValidObjectId(id)) fail(404, 'Entry not found.')
-    const existing = await Record.findById(id)
-    if (!existing) fail(404, 'Entry not found.')
-    await Record.deleteOne({ _id: existing._id })
-    await stateResponse(res, auth)
-    return
+  const existing = await Record.findById(id)
+  if (!existing) fail(404, 'Entry not found.')
+  if (existing.station !== auth.station) fail(403, 'You can only edit entries for your station.')
+  await Record.deleteOne({ _id: existing._id })
+  await stateResponse(res, auth)
+  return
   }
   const body = req.body || {}
   const id = String(body.id || '')
   if (!mongoose.isValidObjectId(id)) fail(404, 'Entry not found.')
   const existing = await Record.findById(id)
   if (!existing) fail(404, 'Entry not found.')
+  if (existing.station !== auth.station) fail(403, 'You can only edit entries for your station.')
   existing.station = requireStation(body.station)
   existing.date = requireDate(body.date)
   existing.train = clip(body.train, 12)
@@ -404,6 +407,7 @@ async function accessEdit(req, res) {
   if (!mongoose.isValidObjectId(id)) fail(404, 'Account not found.')
   const target = await User.findById(id)
   if (!target) fail(404, 'Account not found.')
+  if (target.station !== auth.station) fail(403, 'You can only manage accounts for your station.')
   const name = clip(body.name, 120)
   if (name.length < 2) fail(400, 'Enter the name.')
   const username = cleanUser(body.username)
@@ -414,7 +418,7 @@ async function accessEdit(req, res) {
   if (password && password.length < 6) fail(400, 'Password must be at least 6 characters.')
   target.name = name
   target.username = username
-  target.station = requireStation(body.station)
+  target.station = auth.station
   if (password) target.passwordHash = await hashPassword(password)
   await target.save()
   await stateResponse(res, auth)
@@ -427,12 +431,14 @@ async function trains(req, res) {
   requireAdmin(auth)
   if (req.method === 'DELETE') {
     const station = requireStation(req.query.station)
+    if (station !== auth.station) fail(403, 'You can only manage trains for your station.')
     const number = trainNumber(req.query.number)
     await Train.deleteOne({ station, number })
     await stateResponse(res, auth)
     return
   }
   const station = requireStation(req.body?.station)
+  if (station !== auth.station) fail(403, 'You can only manage trains for your station.')
   const number = trainNumber(req.body?.number)
   if (await Train.exists({ station, number })) fail(409, 'That train is already on this station.')
   try {
@@ -483,7 +489,7 @@ async function media(req, res) {
   if (!isPublic) {
     const auth = await getAuth(req)
     if (!auth) fail(401, 'Sign in required.')
-    if (auth.role !== 'admin' && auth.station !== record.station) fail(403, 'You cannot view this photo.')
+    if (auth.station !== record.station) fail(403, 'You cannot view this photo.')
   }
   const stored = await readStoredPhoto(record[pathKey])
   if (!stored || stored.statusCode !== 200 || !stored.stream) fail(404, 'Photo not found.')

@@ -412,7 +412,7 @@ export default function AdminDesk({ user, date, station, onStation, stats, notic
           <header className="admin-homebar">
             <b>Home - {place}</b>
             <div className="admin-tools">
-              {user.role === 'admin' && <StationPicker allowAll label="Station" value={station} onChange={onStation} />}
+              <span className="admin-station-lock">{place}</span>
               <span>{formatDate(date)}</span>
               <button className="btn signout-btn" type="button" onClick={onLogout}>Sign Out</button>
             </div>
