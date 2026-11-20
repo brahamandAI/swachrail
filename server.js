@@ -45,7 +45,10 @@ function loadEnv(file) {
     ) {
       value = value.slice(1, -1)
     }
-    if (!(key in process.env)) process.env[key] = value
+    // Prefer .env when the key is missing or empty (PM2 sometimes leaves blank vars).
+    if (!(key in process.env) || String(process.env[key] || '') === '') {
+      process.env[key] = value
+    }
   }
 }
 
